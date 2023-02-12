@@ -81,7 +81,7 @@ def setup_platform(
 class Primare(MediaPlayerEntity):
     """Representation of a Primare preamp."""
 
-    _attr_icon = "mdi:speaker-multiple"
+    _attr_icon = "mdi:audio-video"
     _attr_supported_features = SUPPORT_PRIMARE
 
     def __init__(self, config):
