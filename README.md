@@ -1,2 +1,2 @@
 # primare-component
-Primare RS-232 component for Home assistant
+Component for controlling Primare preamps through RS-232 for Home assistant
