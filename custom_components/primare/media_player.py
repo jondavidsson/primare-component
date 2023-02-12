@@ -1,7 +1,7 @@
 """Support for interfacing with Primare preamps through RS-232."""
 from __future__ import annotations
 
-from primare_preamp import PrimarePreamp, PrimarePreampTelnet
+from primare_preamp import PrimarePreamp
 import voluptuous as vol
 
 from homeassistant.components.media_player import (
@@ -100,7 +100,7 @@ class Primare(MediaPlayerEntity):
         else:
             host = self.config.get(CONF_HOST)
             port = self.config[CONF_PORT]
-            self._primare_preamp = PrimarePreampTelnet(host, port)
+            # self._primare_preamp = PrimarePreampTelnet(host, port)
 
     def turn_off(self) -> None:
         """Turn the media player off."""
