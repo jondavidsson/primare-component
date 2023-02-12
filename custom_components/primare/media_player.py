@@ -1,4 +1,4 @@
-"""Support for interfacing with PRIMARE receivers through RS-232."""
+"""Support for interfacing with Primare receivers through RS-232."""
 from __future__ import annotations
 
 from primare_preamp import PrimarePreamp, PrimarePreampTCP, PrimarePreampTelnet
