@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 from primare_preamp import PrimarePreamp
+
+import logging
+
 import voluptuous as vol
 
 from homeassistant.components.media_player import (
@@ -15,6 +18,10 @@ from homeassistant.core import HomeAssistant
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
+
+_LOGGER = logging.getLogger(__name__)
+_LOGGER.debug(f"Primare component loaded...")
+
 
 DEFAULT_TYPE = "RS232"
 DEFAULT_SERIAL_PORT = "/dev/ttyUSB0"
