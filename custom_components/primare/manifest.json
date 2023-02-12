@@ -6,5 +6,5 @@
     "iot_class": "local_polling",
     "loggers": ["primare_preamp"],
     "requirements": [],
-    "version": "0.1"
+    "version": "1.0.0"
   }
