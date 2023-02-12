@@ -4,7 +4,6 @@
     "codeowners": [],
     "documentation": "https://github.com/jondavidsson/primare-component",
     "iot_class": "local_polling",
-    "loggers": ["primare_preamp"],
     "requirements": [],
     "version": "1.0.0"
   }

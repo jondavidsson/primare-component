@@ -20,16 +20,16 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 
 _LOGGER = logging.getLogger(__name__)
-_LOGGER.debug(f"Primare component loaded...")
+_LOGGER.debug("Primare component loaded...")
 
 
 DEFAULT_TYPE = "RS232"
 DEFAULT_SERIAL_PORT = "/dev/ttyUSB0"
 DEFAULT_PORT = 53
 DEFAULT_NAME = "Primare preamp"
-DEFAULT_MIN_VOLUME = -92
-DEFAULT_MAX_VOLUME = -20
-DEFAULT_VOLUME_STEP = 4
+DEFAULT_MIN_VOLUME = 0
+DEFAULT_MAX_VOLUME = 79
+DEFAULT_VOLUME_STEP = 1
 
 SUPPORT_PRIMARE = (
     MediaPlayerEntityFeature.VOLUME_SET
