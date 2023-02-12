@@ -1,7 +1,7 @@
 """Support for interfacing with Primare preamps through RS-232."""
 from __future__ import annotations
 
-from primare_preamp import PrimarePreamp, PrimarePreampTCP, PrimarePreampTelnet
+from primare_preamp import PrimarePreamp, PrimarePreampTelnet
 import voluptuous as vol
 
 from homeassistant.components.media_player import (
@@ -184,98 +184,3 @@ class Primare(MediaPlayerEntity):
         return self._min_volume + round(
             abs(self._min_volume - self._max_volume) * volume
         )
-
-
-class Primaretcp(MediaPlayerEntity):
-    """Representation of a Primare Digital amplifier."""
-
-    _attr_supported_features = SUPPORT_PRIMARE
-
-    def __init__(self, config):
-        """Initialize the amplifier."""
-        self._attr_name = config[CONF_NAME]
-        self._primare_preamp = PrimarePreampTCP(config.get(CONF_HOST))
-        self._min_vol = (config[CONF_MIN_VOLUME] + 90) * 2  # from dB to nad vol (0-200)
-        self._max_vol = (config[CONF_MAX_VOLUME] + 90) * 2  # from dB to nad vol (0-200)
-        self._volume_step = config[CONF_VOLUME_STEP]
-        self._nad_volume = None
-        self._source_list = self._primare_preamp.available_sources()
-
-    def turn_off(self) -> None:
-        """Turn the media player off."""
-        self._primare_preamp.power_off()
-
-    def turn_on(self) -> None:
-        """Turn the media player on."""
-        self._primare_preamp.power_on()
-
-    def volume_up(self) -> None:
-        """Step volume up in the configured increments."""
-        self._primare_preamp.set_volume(self._nad_volume + 2 * self._volume_step)
-
-    def volume_down(self) -> None:
-        """Step volume down in the configured increments."""
-        self._primare_preamp.set_volume(self._nad_volume - 2 * self._volume_step)
-
-    def set_volume_level(self, volume: float) -> None:
-        """Set volume level, range 0..1."""
-        nad_volume_to_set = int(
-            round(volume * (self._max_vol - self._min_vol) + self._min_vol)
-        )
-        self._primare_preamp.set_volume(nad_volume_to_set)
-
-    def mute_volume(self, mute: bool) -> None:
-        """Mute (true) or unmute (false) media player."""
-        if mute:
-            self._primare_preamp.mute()
-        else:
-            self._primare_preamp.unmute()
-
-    def select_source(self, source: str) -> None:
-        """Select input source."""
-        self._primare_preamp.select_source(source)
-
-    @property
-    def source_list(self):
-        """List of available input sources."""
-        return self._primare_preamp.available_sources()
-
-    def update(self) -> None:
-        """Get the latest details from the device."""
-        try:
-            nad_status = self._primare_preamp.status()
-        except OSError:
-            return
-        if nad_status is None:
-            return
-
-        # Update on/off state
-        if nad_status["power"]:
-            self._attr_state = MediaPlayerState.ON
-        else:
-            self._attr_state = MediaPlayerState.OFF
-
-        # Update current volume
-        self._attr_volume_level = self.nad_vol_to_internal_vol(nad_status["volume"])
-        self._nad_volume = nad_status["volume"]
-
-        # Update muted state
-        self._attr_is_volume_muted = nad_status["muted"]
-
-        # Update current source
-        self._attr_source = nad_status["source"]
-
-    def nad_vol_to_internal_vol(self, nad_volume):
-        """Convert nad volume range (0-200) to internal volume range.
-
-        Takes into account configured min and max volume.
-        """
-        if nad_volume < self._min_vol:
-            volume_internal = 0.0
-        elif nad_volume > self._max_vol:
-            volume_internal = 1.0
-        else:
-            volume_internal = (nad_volume - self._min_vol) / (
-                self._max_vol - self._min_vol
-            )
-        return volume_internal
