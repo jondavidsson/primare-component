@@ -1,4 +1,4 @@
-"""Support for interfacing with Primare receivers through RS-232."""
+"""Support for interfacing with Primare preamps through RS-232."""
 from __future__ import annotations
 
 from primare_preamp import PrimarePreamp, PrimarePreampTCP, PrimarePreampTelnet
@@ -158,7 +158,7 @@ class Primare(MediaPlayerEntity):
         if self.state == MediaPlayerState.ON:
             self._attr_is_volume_muted = self._primare_preamp.main_mute("?") == "On"
             volume = self._primare_preamp.main_volume("?")
-            # Some receivers cannot report the volume, e.g. C 356BEE,
+            # Some preamps cannot report the volume, e.g. C 356BEE,
             # instead they only support stepping the volume up or down
             self._attr_volume_level = (
                 self.calc_volume(volume) if volume is not None else None
