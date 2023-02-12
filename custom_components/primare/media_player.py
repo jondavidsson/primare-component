@@ -1,7 +1,7 @@
-"""Support for interfacing with NAD receivers through RS-232."""
+"""Support for interfacing with PRIMARE receivers through RS-232."""
 from __future__ import annotations
 
-from primare_preamp import NADReceiver, NADReceiverTCP, NADReceiverTelnet
+from primare_preamp import PrimarePreamp, PrimarePreampTCP, PrimarePreampTelnet
 import voluptuous as vol
 
 from homeassistant.components.media_player import (
@@ -19,12 +19,12 @@ from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 DEFAULT_TYPE = "RS232"
 DEFAULT_SERIAL_PORT = "/dev/ttyUSB0"
 DEFAULT_PORT = 53
-DEFAULT_NAME = "NAD Receiver"
+DEFAULT_NAME = "Primare preamp"
 DEFAULT_MIN_VOLUME = -92
 DEFAULT_MAX_VOLUME = -20
 DEFAULT_VOLUME_STEP = 4
 
-SUPPORT_NAD = (
+SUPPORT_PRIMARE = (
     MediaPlayerEntityFeature.VOLUME_SET
     | MediaPlayerEntityFeature.VOLUME_MUTE
     | MediaPlayerEntityFeature.TURN_ON
@@ -33,11 +33,11 @@ SUPPORT_NAD = (
     | MediaPlayerEntityFeature.SELECT_SOURCE
 )
 
-CONF_SERIAL_PORT = "serial_port"  # for NADReceiver
+CONF_SERIAL_PORT = "serial_port"  # for PrimarePreamp
 CONF_MIN_VOLUME = "min_volume"
 CONF_MAX_VOLUME = "max_volume"
-CONF_VOLUME_STEP = "volume_step"  # for NADReceiverTCP
-CONF_SOURCE_DICT = "sources"  # for NADReceiver
+CONF_VOLUME_STEP = "volume_step"  # for PrimarePreampTCP
+CONF_SOURCE_DICT = "sources"  # for PrimarePreamp
 
 # Max value based on a C658 with an MDC HDM-2 card installed
 SOURCE_DICT_SCHEMA = vol.Schema({vol.Range(min=1, max=12): cv.string})
@@ -65,27 +65,27 @@ def setup_platform(
     add_entities: AddEntitiesCallback,
     discovery_info: DiscoveryInfoType | None = None,
 ) -> None:
-    """Set up the NAD platform."""
+    """Set up the Primare platform."""
     if config.get(CONF_TYPE) in ("RS232", "Telnet"):
         add_entities(
-            [NAD(config)],
+            [Primare(config)],
             True,
         )
     else:
         add_entities(
-            [NADtcp(config)],
+            [Primaretcp(config)],
             True,
         )
 
 
-class NAD(MediaPlayerEntity):
-    """Representation of a NAD Receiver."""
+class Primare(MediaPlayerEntity):
+    """Representation of a Primare preamp."""
 
     _attr_icon = "mdi:speaker-multiple"
-    _attr_supported_features = SUPPORT_NAD
+    _attr_supported_features = SUPPORT_PRIMARE
 
     def __init__(self, config):
-        """Initialize the NAD Receiver device."""
+        """Initialize the Primare preamp device."""
         self.config = config
         self._instantiate_primare_preamp()
         self._attr_name = self.config[CONF_NAME]
@@ -94,13 +94,13 @@ class NAD(MediaPlayerEntity):
         self._source_dict = config[CONF_SOURCE_DICT]
         self._reverse_mapping = {value: key for key, value in self._source_dict.items()}
 
-    def _instantiate_primare_preamp(self) -> NADReceiver:
+    def _instantiate_primare_preamp(self) -> PrimarePreamp:
         if self.config[CONF_TYPE] == "RS232":
-            self._primare_preamp = NADReceiver(self.config[CONF_SERIAL_PORT])
+            self._primare_preamp = PrimarePreamp(self.config[CONF_SERIAL_PORT])
         else:
             host = self.config.get(CONF_HOST)
             port = self.config[CONF_PORT]
-            self._primare_preamp = NADReceiverTelnet(host, port)
+            self._primare_preamp = PrimarePreampTelnet(host, port)
 
     def turn_off(self) -> None:
         """Turn the media player off."""
@@ -186,15 +186,15 @@ class NAD(MediaPlayerEntity):
         )
 
 
-class NADtcp(MediaPlayerEntity):
-    """Representation of a NAD Digital amplifier."""
+class Primaretcp(MediaPlayerEntity):
+    """Representation of a Primare Digital amplifier."""
 
-    _attr_supported_features = SUPPORT_NAD
+    _attr_supported_features = SUPPORT_PRIMARE
 
     def __init__(self, config):
         """Initialize the amplifier."""
         self._attr_name = config[CONF_NAME]
-        self._primare_preamp = NADReceiverTCP(config.get(CONF_HOST))
+        self._primare_preamp = PrimarePreampTCP(config.get(CONF_HOST))
         self._min_vol = (config[CONF_MIN_VOLUME] + 90) * 2  # from dB to nad vol (0-200)
         self._max_vol = (config[CONF_MAX_VOLUME] + 90) * 2  # from dB to nad vol (0-200)
         self._volume_step = config[CONF_VOLUME_STEP]

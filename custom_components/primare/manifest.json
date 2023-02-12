@@ -1,8 +1,8 @@
 {
-    "domain": "nad",
-    "name": "NAD",
+    "domain": "primare",
+    "name": "Primare",
     "codeowners": [],
-    "documentation": "https://www.home-assistant.io/integrations/nad",
+    "documentation": "https://github.com/jondavidsson/primare-component",
     "iot_class": "local_polling",
     "loggers": ["primare_preamp"],
     "requirements": []
